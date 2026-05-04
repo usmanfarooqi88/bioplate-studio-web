@@ -20,7 +20,10 @@ export function DownloadCTA() {
 
         <div className="mb-16 flex flex-col justify-center gap-6 sm:flex-row">
           <a
-            href="/downloads/BioPlate-Studio-macOS.dmg"
+            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.0/BioPlate%20Studio_1.0.0_x64.dmg"
+            download
+            target="_blank"
+            rel="noopener noreferrer"
             className="group relative transform rounded-xl bg-gradient-to-r from-purple-600 to-purple-800 px-10 py-6 text-lg font-semibold text-white shadow-2xl shadow-purple-500/50 transition-all hover:scale-105 hover:from-purple-500 hover:to-purple-700"
           >
             <div className="flex items-center gap-4">
@@ -35,7 +38,10 @@ export function DownloadCTA() {
           </a>
 
           <a
-            href="/downloads/BioPlate-Studio-Windows.msi"
+            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.0/BioPlate%20Studio_1.0.0_x64-setup.exe"
+            download
+            target="_blank"
+            rel="noopener noreferrer"
             className="group relative transform rounded-xl bg-gradient-to-r from-teal-600 to-teal-800 px-10 py-6 text-lg font-semibold text-white shadow-2xl shadow-teal-500/50 transition-all hover:scale-105 hover:from-teal-500 hover:to-teal-700"
           >
             <div className="flex items-center gap-4">
