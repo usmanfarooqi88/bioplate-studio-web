@@ -20,7 +20,7 @@ export function DownloadCTA() {
 
         <div className="mb-16 flex flex-col justify-center gap-6 sm:flex-row">
           <a
-            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.0/BioPlate%20Studio_1.0.0_x64.dmg"
+            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.0/BioPlate.Studio_1.0.0_x64.dmg"
             download
             target="_blank"
             rel="noopener noreferrer"
@@ -38,7 +38,7 @@ export function DownloadCTA() {
           </a>
 
           <a
-            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.0/BioPlate%20Studio_1.0.0_x64-setup.exe"
+            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.0/BioPlate.Studio_1.0.0_x64-setup.exe"
             download
             target="_blank"
             rel="noopener noreferrer"
