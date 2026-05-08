@@ -7,6 +7,9 @@ import { Features } from '@/components/Features';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ScrollVideo } from '@/components/ScrollVideo';
 
+/**
+ * Landing page entry with video preloading transition.
+ */
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [showContent, setShowContent] = useState(false);

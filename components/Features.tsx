@@ -1,4 +1,9 @@
-export function Features() {
+import { memo } from 'react';
+
+/**
+ * Feature grid describing core BioPlate Studio capabilities.
+ */
+function FeaturesComponent() {
   const features = [
     {
       icon: (
@@ -143,7 +148,6 @@ export function Features() {
               key={index}
               className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] p-8 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.65)] backdrop-blur-md transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-purple-400/35 hover:bg-gradient-to-b hover:from-white/[0.09] hover:to-white/[0.04] hover:shadow-[0_20px_50px_-12px_rgba(147,51,234,0.35),0_12px_40px_-16px_rgba(0,0,0,0.8)]"
             >
-              {/* subtle top highlight */}
               <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-70" />
 
               <div className="mb-6 inline-flex rounded-full bg-gradient-to-br from-purple-500 via-violet-600 to-indigo-800 p-[2px] text-white shadow-lg shadow-purple-900/60 transition-[transform,box-shadow,filter] duration-300 ease-out group-hover:-translate-y-0.5 group-hover:shadow-[0_0_28px_-2px_rgba(168,85,247,0.55),0_0_52px_-8px_rgba(45,212,191,0.35)] group-hover:[filter:drop-shadow(0_0_14px_rgba(168,85,247,0.45))]">
@@ -165,3 +169,5 @@ export function Features() {
     </section>
   );
 }
+
+export const Features = memo(FeaturesComponent);

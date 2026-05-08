@@ -7,6 +7,9 @@ import {
 } from '@/lib/scrollVideoSource';
 import { Logo } from './Logo';
 
+/**
+ * Hero section that synchronizes a full-bleed video with page scroll progress.
+ */
 export function ScrollVideo() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);

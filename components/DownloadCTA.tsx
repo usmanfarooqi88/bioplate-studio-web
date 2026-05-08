@@ -1,4 +1,9 @@
-export function DownloadCTA() {
+import { memo } from 'react';
+
+/**
+ * Download call-to-action section with platform-specific installers.
+ */
+function DownloadCTAComponent() {
   return (
     <section
       id="download"
@@ -69,3 +74,5 @@ export function DownloadCTA() {
     </section>
   );
 }
+
+export const DownloadCTA = memo(DownloadCTAComponent);

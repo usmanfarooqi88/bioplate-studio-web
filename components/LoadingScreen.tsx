@@ -7,6 +7,9 @@ interface LoadingScreenProps {
   onComplete: () => void;
 }
 
+/**
+ * Preloads the selected hero video source and fades into the page when ready.
+ */
 export function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);

@@ -1,4 +1,9 @@
-export function Footer() {
+import { memo } from 'react';
+
+/**
+ * Site footer with quick links, contact channels, and legal info.
+ */
+function FooterComponent() {
   return (
     <footer className="border-t border-white/10 bg-black">
       <div className="mx-auto max-w-7xl px-6 py-12">
@@ -162,3 +167,5 @@ export function Footer() {
     </footer>
   );
 }
+
+export const Footer = memo(FooterComponent);
