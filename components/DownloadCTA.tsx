@@ -25,7 +25,7 @@ function DownloadCTAComponent() {
 
         <div className="mb-16 flex flex-col justify-center gap-6 sm:flex-row">
           <a
-            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.0/BioPlate.Studio_1.0.0_x64.dmg"
+            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.2/BioPlate.Studio_1.0.2_x64.dmg"
             download
             target="_blank"
             rel="noopener noreferrer"
@@ -43,7 +43,7 @@ function DownloadCTAComponent() {
           </a>
 
           <a
-            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.0/BioPlate.Studio_1.0.0_x64-setup.exe"
+            href="https://github.com/usmanfarooqi88/bioplate-studio-web/releases/download/v1.0.2/BioPlate.Studio_1.0.2_x64-setup.exe"
             download
             target="_blank"
             rel="noopener noreferrer"
@@ -63,7 +63,7 @@ function DownloadCTAComponent() {
 
         <div className="space-y-2 text-sm text-gray-400">
           <p className="font-semibold text-gray-300">
-            Version 1.0.0 • Free • Open Source
+            Version 1.0.2 • Free • Open Source
           </p>
           <p>
             macOS 10.15+ (Intel & Apple Silicon) • Windows 10/11 • 8 GB RAM
