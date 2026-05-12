@@ -3,12 +3,13 @@
 import { useCallback, useState } from 'react';
 import { DownloadCTA } from '@/components/DownloadCTA';
 import { Footer } from '@/components/Footer';
-import { Features } from '@/components/Features';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { ScrollVideo } from '@/components/ScrollVideo';
+import { Screenshots } from '@/components/Screenshots';
 
 /**
  * Landing page entry with video preloading transition.
+ * Smooth scroll targets: #features (screenshots), #download (installers).
  */
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,7 +30,7 @@ export default function Home() {
         }`}
       >
         <ScrollVideo />
-        <Features />
+        <Screenshots />
         <DownloadCTA />
         <Footer />
       </main>

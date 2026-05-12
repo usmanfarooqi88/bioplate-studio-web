@@ -7,7 +7,7 @@ function DownloadCTAComponent() {
   return (
     <section
       id="download"
-      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-black via-purple-950/20 to-black px-6"
+      className="relative flex min-h-screen scroll-mt-6 items-center justify-center overflow-hidden bg-gradient-to-b from-black via-purple-950/20 to-black px-6"
     >
       <div className="absolute inset-0 opacity-20">
         <div className="absolute left-1/4 top-1/4 h-96 w-96 animate-pulse rounded-full bg-purple-500 blur-3xl" />
