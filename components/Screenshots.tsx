@@ -1,170 +1,180 @@
+'use client';
+
 import Image from 'next/image';
-import { memo } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
-type FeatureShot = {
-  kicker: string;
-  title: string;
-  description: string;
-  imageSrc: string;
-  imageAlt: string;
-  glowFrom: string;
-  glowVia: string;
-  borderAccent: string;
-};
-
-const FEATURES: FeatureShot[] = [
+const FEATURES = [
   {
-    kicker: 'Canvas & grid',
-    title: 'Start from a clean plate layout',
+    tag: 'Layout',
+    title: 'Flexible grid layouts',
     description:
-      'Pick 2×2, 3×3, or 4×4 presets or dial in rows, columns, margin, and gutter. Generate the grid and label panels A–Z in one pass.',
-    imageSrc: '/screenshots/app_screen_1.jpg',
-    imageAlt: 'BioPlate Studio empty 3×3 grid on canvas',
-    glowFrom: 'from-purple-600/50',
-    glowVia: 'via-violet-500/25',
-    borderAccent: 'group-hover:border-purple-400/40',
+      'Build 2×2 through 4×4 plates with precise margins and gutters—labels stay organized from the first grid.',
+    image: '/screenshots/app_screen_1.jpg',
   },
   {
-    kicker: 'Per-panel editing',
-    title: 'Refine every panel like a pro layout tool',
+    tag: 'Panels',
+    title: 'Smart panel editing',
     description:
-      'Select a panel to add images, tune labels, duplicate or remove panels, and keep contrast chips readable on any background.',
-    imageSrc: '/screenshots/app_screen_2.jpg',
-    imageAlt: 'BioPlate Studio panel selected with inspector sidebar',
-    glowFrom: 'from-sky-500/45',
-    glowVia: 'via-blue-500/20',
-    borderAccent: 'group-hover:border-sky-400/40',
+      'Select any cell to swap imagery, tune typography, duplicate work, or remove panels without breaking the plate.',
+    image: '/screenshots/app_screen_2.jpg',
   },
   {
-    kicker: 'Batch import',
-    title: 'Drop in a folder—panels fill in order',
+    tag: 'Import',
+    title: 'Publication-ready plates',
     description:
-      'Import JPG, PNG, WebP, or PSD in bulk. Images land in empty slots sequentially so multi-panel figures come together fast.',
-    imageSrc: '/screenshots/app_screen_3.jpg',
-    imageAlt: 'BioPlate Studio plate filled with microscopy images',
-    glowFrom: 'from-teal-500/45',
-    glowVia: 'via-cyan-400/20',
-    borderAccent: 'group-hover:border-teal-400/40',
+      'Batch-import JPG, PNG, WebP, or PSD files and watch each asset land in the next open slot with automatic lettering.',
+    image: '/screenshots/app_screen_3.jpg',
   },
   {
-    kicker: 'Scale bars',
+    tag: 'Scale bars',
     title: 'Publication-ready scale bars per panel',
     description:
       'Toggle scale bars, choose print presets from millimeters to centimeters, set orientation, thickness, color, and apply across all panels.',
-    imageSrc: '/screenshots/app_screen_5.jpg',
-    imageAlt: 'BioPlate Studio scale bar settings in sidebar',
-    glowFrom: 'from-fuchsia-500/45',
-    glowVia: 'via-pink-500/20',
-    borderAccent: 'group-hover:border-fuchsia-400/40',
+    image: '/screenshots/app_screen_5.jpg',
   },
   {
-    kicker: 'Preferences',
-    title: 'Defaults that match your lab workflow',
+    tag: 'Preferences',
+    title: 'Advanced customization',
     description:
-      'Auto-relabeling, label case, scale bar mode, label style defaults, safety prompts, and display options—saved for every session.',
-    imageSrc: '/screenshots/app_screen_6.jpg',
-    imageAlt: 'BioPlate Studio preferences window',
-    glowFrom: 'from-indigo-500/45',
-    glowVia: 'via-purple-500/25',
-    borderAccent: 'group-hover:border-indigo-400/40',
+      'Preferences keep relabeling rules, scale modes, safety prompts, and UI density aligned with how your lab actually works.',
+    image: '/screenshots/app_screen_6.jpg',
   },
-];
+] as const;
+
+const GLASS_CARD =
+  'rounded-3xl border border-white/[0.1] bg-white/[0.06] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.75)] backdrop-blur-xl';
 
 function ScreenshotsComponent() {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [edge, setEdge] = useState({ start: true, end: false });
+
+  const syncEdges = useCallback(() => {
+    const row = scrollerRef.current;
+    if (!row) return;
+    const maxScroll = row.scrollWidth - row.clientWidth;
+    const left = row.scrollLeft;
+    setEdge({
+      start: left <= 4,
+      end: left >= maxScroll - 4,
+    });
+  }, []);
+
+  useEffect(() => {
+    const row = scrollerRef.current;
+    if (!row) return;
+
+    let raf = 0;
+    const onScroll = () => {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(syncEdges);
+    };
+
+    row.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', syncEdges, { passive: true });
+    syncEdges();
+
+    return () => {
+      row.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', syncEdges);
+      cancelAnimationFrame(raf);
+    };
+  }, [syncEdges]);
+
+  const cardStepPx = () => {
+    const row = scrollerRef.current;
+    const card = row?.querySelector<HTMLElement>('[data-carousel-card]');
+    if (!card) return 424;
+    return card.offsetWidth + 24;
+  };
+
+  const scrollByDir = (dir: -1 | 1) => {
+    const row = scrollerRef.current;
+    if (!row) return;
+    row.scrollBy({ left: dir * cardStepPx(), behavior: 'smooth' });
+  };
+
   return (
     <section
       id="features"
-      className="relative scroll-mt-6 overflow-hidden bg-black px-4 py-20 sm:px-6 md:py-28"
+      className="relative scroll-mt-6 overflow-x-hidden bg-black text-white"
       aria-labelledby="features-heading"
     >
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-1/4 top-0 h-[520px] w-[520px] rounded-full bg-purple-600/15 blur-[120px]" />
-        <div className="absolute -right-1/4 top-1/3 h-[480px] w-[480px] rounded-full bg-teal-500/10 blur-[110px]" />
-        <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-blue-600/10 blur-[100px]" />
-      </div>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black via-purple-950/[0.08] to-black" />
 
-      <div className="relative mx-auto max-w-6xl">
-        <header className="mx-auto mb-16 max-w-3xl text-center md:mb-24">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-teal-400/90">
+      <div className="relative mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
+        <div className="pb-8 pt-16 sm:pb-10 sm:pt-20">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-teal-400/90">
             Inside the app
           </p>
           <h2
             id="features-heading"
-            className="mb-4 text-3xl font-bold text-white sm:text-4xl md:text-5xl"
+            className="max-w-3xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:max-w-4xl md:text-5xl"
           >
-            Built for plates that ship in journals
+            Everything your lab needs to lay out plates and ship figures
           </h2>
-          <p className="text-lg text-gray-400 md:text-xl">
-            A quick tour of the desktop workflow—grid, import, polish, and
-            export—with the same dark UI you use in the lab.
-          </p>
-        </header>
+        </div>
 
-        <div className="flex flex-col gap-20 md:gap-28">
-          {FEATURES.map((item, index) => {
-            const isEven = index % 2 === 0;
-            const imageBlock = (
-              <div
-                className={`relative min-w-0 flex-1 ${!isEven ? 'max-md:order-1' : ''}`}
-              >
-                <div
-                  className={`pointer-events-none absolute -inset-4 rounded-[2rem] bg-gradient-to-br ${item.glowFrom} ${item.glowVia} to-transparent opacity-70 blur-2xl transition-opacity duration-500 group-hover:opacity-100`}
+        <div
+          ref={scrollerRef}
+          className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-4 pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {FEATURES.map((feature, index) => (
+            <article
+              key={feature.image}
+              data-carousel-card
+              className={`relative w-[min(18.5rem,100%)] shrink-0 snap-start sm:w-[22rem] md:w-[26rem] ${GLASS_CARD} overflow-hidden`}
+            >
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-80" />
+              <div className="relative aspect-[16/10] w-full bg-neutral-900/80">
+                <Image
+                  src={feature.image}
+                  alt={feature.title}
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 768px) 296px, 416px"
+                  priority={index === 0}
                 />
-                <div
-                  className={`group/image relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] p-2 shadow-[0_24px_80px_-24px_rgba(0,0,0,0.85)] backdrop-blur-sm transition-[transform,box-shadow,border-color] duration-500 ease-out will-change-transform hover:scale-[1.02] hover:border-white/20 hover:shadow-[0_32px_90px_-20px_rgba(147,51,234,0.25),0_24px_60px_-24px_rgba(20,184,166,0.12)] ${item.borderAccent}`}
-                >
-                  <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-t from-black/20 via-transparent to-white/[0.04]" />
-                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-neutral-900">
-                    <Image
-                      src={item.imageSrc}
-                      alt={item.imageAlt}
-                      fill
-                      className="object-cover object-top"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      priority={index < 2}
-                    />
-                  </div>
-                </div>
               </div>
-            );
-
-            const textBlock = (
-              <div
-                className={`flex min-w-0 flex-1 flex-col justify-center ${!isEven ? 'max-md:order-2' : ''}`}
-              >
-                <div className="rounded-2xl border border-white/[0.07] bg-white/[0.04] p-6 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.75)] backdrop-blur-xl transition-[border-color,box-shadow] duration-300 hover:border-white/15 hover:shadow-[0_12px_48px_-12px_rgba(147,51,234,0.15)] sm:p-8">
-                  <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-purple-300/90">
-                    {item.kicker}
-                  </p>
-                  <h3 className="mb-3 text-2xl font-bold text-white sm:text-3xl">
-                    {item.title}
-                  </h3>
-                  <p className="leading-relaxed text-gray-400">
-                    {item.description}
-                  </p>
-                </div>
+              <div className="relative space-y-3 px-5 py-6 sm:px-6 sm:py-7">
+                <span className="inline-flex rounded-full border border-white/15 bg-white/[0.08] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-purple-200/95">
+                  {feature.tag}
+                </span>
+                <h3 className="text-lg font-bold leading-snug text-white sm:text-xl">
+                  {feature.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-gray-400 sm:text-[0.9375rem]">
+                  {feature.description}
+                </p>
               </div>
-            );
+            </article>
+          ))}
+        </div>
 
-            return (
-              <article
-                key={item.imageSrc}
-                className="group relative grid gap-10 md:grid-cols-2 md:items-center md:gap-14 lg:gap-16"
-              >
-                {isEven ? (
-                  <>
-                    {imageBlock}
-                    {textBlock}
-                  </>
-                ) : (
-                  <>
-                    {textBlock}
-                    {imageBlock}
-                  </>
-                )}
-              </article>
-            );
-          })}
+        <div className="flex justify-end pb-14 pt-6">
+          <div className="flex shrink-0 gap-2">
+            <button
+              type="button"
+              aria-label="Previous features"
+              disabled={edge.start}
+              onClick={() => scrollByDir(-1)}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-white shadow-lg backdrop-blur-md transition enabled:hover:border-white/25 enabled:hover:bg-white/[0.12] disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              <span aria-hidden className="text-lg leading-none">
+                ‹
+              </span>
+            </button>
+            <button
+              type="button"
+              aria-label="Next features"
+              disabled={edge.end}
+              onClick={() => scrollByDir(1)}
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-white shadow-lg backdrop-blur-md transition enabled:hover:border-white/25 enabled:hover:bg-white/[0.12] disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              <span aria-hidden className="text-lg leading-none">
+                ›
+              </span>
+            </button>
+          </div>
         </div>
       </div>
     </section>

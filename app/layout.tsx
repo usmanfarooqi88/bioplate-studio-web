@@ -39,7 +39,7 @@ export default function RootLayout({
           type="video/mp4"
         />
       </head>
-      <body>{children}</body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
