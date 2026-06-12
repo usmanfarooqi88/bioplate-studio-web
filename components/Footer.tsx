@@ -129,7 +129,8 @@ function FooterComponent() {
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
           <p className="text-center text-sm text-gray-400 md:text-left">
-            © {new Date().getFullYear()} BioPlate Studio. Open Source • by{' '}
+            © <span suppressHydrationWarning>{new Date().getFullYear()}</span>{' '}
+            BioPlate Studio. Open Source • by{' '}
             <a
               href="https://github.com/usmanfarooqi88"
               target="_blank"

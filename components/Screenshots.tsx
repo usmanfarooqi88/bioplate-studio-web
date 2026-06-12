@@ -95,7 +95,7 @@ function ScreenshotsComponent() {
 
   return (
     <section
-      id="features"
+      id="screenshots"
       className="relative scroll-mt-6 overflow-x-hidden bg-black text-white"
       aria-labelledby="features-heading"
     >

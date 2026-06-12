@@ -1,30 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import {
-  SCROLL_VIDEO_1080,
-  getScrollVideoSrcForViewport,
-} from '@/lib/scrollVideoSource';
 import { Logo } from './Logo';
 
 /**
- * Hero section that synchronizes a full-bleed video with page scroll progress.
+ * Hero scroll section — overlays only; video is in HeroBackgroundVideo.
  */
 export function ScrollVideo() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [videoSrc, setVideoSrc] = useState<string>(SCROLL_VIDEO_1080);
-
-  useEffect(() => {
-    const updateVideoQuality = () => {
-      setVideoSrc(getScrollVideoSrcForViewport());
-    };
-
-    updateVideoQuality();
-    window.addEventListener('resize', updateVideoQuality);
-    return () => window.removeEventListener('resize', updateVideoQuality);
-  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -48,45 +32,15 @@ export function ScrollVideo() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        video.pause();
-      } else {
-        video.play().catch(() => {});
-      }
-    };
-
-    document.addEventListener('visibilitychange', onVisibilityChange);
-    return () =>
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-  }, [videoSrc]);
-
   return (
     <div ref={containerRef} className="relative h-[300vh]">
       <div className="sticky top-0 h-screen overflow-hidden">
-        <video
-          key={videoSrc}
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 h-full w-full object-cover"
-        >
-          <source src={videoSrc} type="video/mp4" />
-        </video>
-
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />
 
         <div
-          className="pointer-events-none absolute bottom-0 left-0 right-0 z-[8] h-96 bg-gradient-to-b from-transparent via-black/50 to-black transition-opacity duration-700"
+          className="pointer-events-none absolute bottom-0 left-0 right-0 z-[8] h-48 bg-gradient-to-b from-transparent to-black/25 transition-opacity duration-700"
           style={{
-            opacity: Math.min(1, Math.max(0, (scrollProgress - 0.6) * 2.5)),
+            opacity: Math.min(1, Math.max(0, (scrollProgress - 0.75) * 4)),
           }}
         />
 

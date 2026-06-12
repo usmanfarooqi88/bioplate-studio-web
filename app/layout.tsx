@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
+import Script from 'next/script';
+import { EXTENSION_HYDRATION_GUARD_SCRIPT } from '@/lib/extensionHydrationGuard';
 import './globals.css';
 
 const inter = Inter({
@@ -31,15 +33,16 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${playfairDisplay.variable}`}
     >
-      <head>
-        <link
-          rel="preload"
-          href="/videos/mushroom-scroll-1080.mp4"
-          as="video"
-          type="video/mp4"
+      <body className={inter.className} suppressHydrationWarning>
+        <Script
+          id="extension-hydration-guard"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: EXTENSION_HYDRATION_GUARD_SCRIPT,
+          }}
         />
-      </head>
-      <body suppressHydrationWarning>{children}</body>
+        <div suppressHydrationWarning>{children}</div>
+      </body>
     </html>
   );
 }
