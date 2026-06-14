@@ -75,7 +75,8 @@ function ScreenshotsComponent() {
         return;
       }
 
-      const progressInSection = (scrollY - triggerStart) / (triggerEnd - triggerStart);
+      const progressInSection =
+        (scrollY - triggerStart) / (triggerEnd - triggerStart);
       const rawIndex = progressInSection * FEATURES.length;
       const newIndex = Math.floor(rawIndex);
       const clampedIndex = Math.max(0, Math.min(newIndex, FEATURES.length - 1));
@@ -93,7 +94,7 @@ function ScreenshotsComponent() {
     };
   }, []);
 
-  const currentFeature = FEATURES[activeIndex];
+  const feature = FEATURES[activeIndex];
 
   return (
     <section
@@ -101,102 +102,66 @@ function ScreenshotsComponent() {
       ref={containerRef}
       className="relative bg-black"
       style={{ height: `${FEATURES.length * 100}vh` }}
+      aria-label="App features"
     >
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/5 to-black pointer-events-none" />
-        
-        {/* Dynamic glow based on active feature */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/5 to-black" />
         <div
-          className={`absolute -inset-1/2 bg-gradient-to-br ${currentFeature.color} opacity-10 blur-3xl transition-all duration-1000 ease-out`}
+          className={`absolute -inset-1/2 bg-gradient-to-br ${feature.color} opacity-10 blur-3xl transition-all duration-1000 ease-out`}
         />
       </div>
 
-      {/* Sticky content */}
-      <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 w-full relative z-10">
-          <div className="text-center space-y-4 md:space-y-6">
-            {FEATURES.map((feature, index) => (
+      <div className="sticky top-0 z-10 flex h-screen max-h-screen flex-col items-center justify-center overflow-hidden bg-black/95 px-4 pb-8 pt-28 backdrop-blur-sm sm:pt-32">
+        <div className="flex w-full max-w-3xl min-h-0 flex-1 flex-col items-center justify-center gap-5 overflow-y-auto py-4 sm:gap-6 md:gap-8">
+          <span className="badge-accent shrink-0">{feature.tag}</span>
+
+          <div className="feature-text w-full shrink-0 px-2 text-center sm:px-6">
+            <h2 className="mx-auto mb-3 max-w-2xl text-3xl font-bold leading-tight text-white sm:mb-4 sm:text-4xl md:text-5xl">
+              {feature.title}
+            </h2>
+            <p className="mx-auto max-w-2xl break-words text-base leading-relaxed text-white/70 sm:text-lg">
+              {feature.description}
+            </p>
+          </div>
+
+          <div className="relative w-full max-w-2xl shrink-0">
+            <div
+              className={`pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-br ${feature.color} opacity-20 blur-2xl`}
+              aria-hidden
+            />
+            <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md">
+              <div className="relative aspect-[16/10] max-h-[34vh] w-full sm:max-h-[38vh]">
+                <Image
+                  key={feature.image}
+                  src={feature.image}
+                  alt={feature.title}
+                  fill
+                  className="object-cover object-top"
+                  sizes="(max-width: 768px) 100vw, 672px"
+                  priority={activeIndex === 0}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex shrink-0 gap-2 pt-1">
+            {FEATURES.map((_, index) => (
               <div
                 key={index}
-                className={`transition-all duration-700 ease-out ${
-                  activeIndex === index
-                    ? 'opacity-100 relative scale-100'
-                    : 'opacity-0 absolute inset-0 pointer-events-none scale-95'
+                className={`h-1 rounded-full transition-all duration-500 ${
+                  index === activeIndex
+                    ? 'w-8 bg-purple-500'
+                    : 'w-2 bg-white/30'
                 }`}
-              >
-                {/* Tag with enhanced styling */}
-                <div className="mb-6 md:mb-8 inline-block">
-                  <span className="badge-accent">
-                    {feature.tag}
-                  </span>
-                </div>
-
-                {/* Title with gradient effect */}
-                <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 md:mb-8 leading-tight max-w-5xl mx-auto">
-                  {feature.title}
-                </h2>
-
-                {/* Description */}
-                <p className="text-xl md:text-2xl text-gray-400 max-w-4xl mx-auto mb-12 md:mb-16 leading-relaxed">
-                  {feature.description}
-                </p>
-
-                {/* Screenshot with enhanced glass effect */}
-                <div className="max-w-5xl mx-auto">
-                  <div className="group relative">
-                    {/* Glow effect */}
-                    <div
-                      className={`absolute -inset-6 md:-inset-8 rounded-[3rem] bg-gradient-to-br ${feature.color} opacity-20 blur-3xl group-hover:opacity-30 group-hover:blur-[40px] transition-all duration-700`}
-                    />
-
-                    {/* Glass container */}
-                    <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl hover:border-white/20 transition-all duration-300 group-hover:shadow-3xl group-hover:shadow-purple-500/20">
-                      {/* Inner content */}
-                      <div className="relative aspect-[16/10] bg-gradient-to-br from-white/10 to-transparent">
-                        <Image
-                          src={feature.image}
-                          alt={feature.title}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                          sizes="(max-width: 1024px) 100vw, 80vw"
-                          priority={index === 0}
-                        />
-                        
-                        {/* Overlay gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
-                        
-                        {/* Shine effect */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Progress dots with enhanced design */}
-                <div className="flex justify-center gap-3 mt-14 md:mt-16">
-                  {FEATURES.map((_, idx) => (
-                    <div key={idx} className="relative group">
-                      <div
-                        className={`h-2 rounded-full transition-all duration-500 ${
-                          idx === activeIndex
-                            ? 'w-12 bg-gradient-to-r from-purple-500 to-teal-500 shadow-lg shadow-purple-500/50'
-                            : idx < activeIndex
-                            ? 'w-10 bg-gradient-to-r from-purple-400 to-purple-600 opacity-60'
-                            : 'w-8 bg-white/20 hover:bg-white/30'
-                        }`}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* Feature count indicator */}
-                <div className="mt-10 text-sm text-gray-500 font-mono">
-                  {String(activeIndex + 1).padStart(2, '0')} / {String(FEATURES.length).padStart(2, '0')}
-                </div>
-              </div>
+                aria-hidden
+              />
             ))}
           </div>
+
+          <p className="shrink-0 font-mono text-xs text-gray-500">
+            {String(activeIndex + 1).padStart(2, '0')} /{' '}
+            {String(FEATURES.length).padStart(2, '0')}
+          </p>
         </div>
       </div>
     </section>

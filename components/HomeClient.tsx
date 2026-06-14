@@ -34,6 +34,17 @@ export function HomeClient() {
         }`}
       >
         <HeroSection />
+
+        {/* Smooth hero → features blend */}
+        <div
+          className="pointer-events-none relative -mt-32 h-32 sm:-mt-40 sm:h-40"
+          style={{
+            background:
+              'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(26,0,51,0.15) 20%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.65) 70%, rgba(0,0,0,1) 100%)',
+          }}
+          aria-hidden
+        />
+
         <Screenshots />
         <DownloadCTA />
         <Footer />

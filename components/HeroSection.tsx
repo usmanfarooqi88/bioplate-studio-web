@@ -168,6 +168,14 @@ export function HeroSection() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(168,85,247,0.18),transparent_50%),radial-gradient(ellipse_at_70%_80%,rgba(20,184,166,0.14),transparent_45%)]"
         aria-hidden
       />
+      <div
+        className="pointer-events-none absolute bottom-0 left-0 right-0 z-[12] h-48 sm:h-64"
+        style={{
+          background:
+            'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.25) 35%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,1) 100%)',
+        }}
+        aria-hidden
+      />
 
       {/* Fixed navigation */}
       <nav className="fixed inset-x-0 top-0 z-50 px-4 pt-safe-top sm:px-6 md:px-10">
@@ -245,24 +253,14 @@ export function HeroSection() {
             ))}
           </div>
 
-          {/* CTAs */}
-          <div
-            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
-            style={reveal(720)}
-          >
+          {/* CTA */}
+          <div className="mt-10 flex justify-center" style={reveal(720)}>
             <a
               href="#download"
               className="btn-gradient-primary px-8 py-4 text-base"
-              aria-label="Start creating morphology plates for free"
+              aria-label="Download BioPlate Studio now"
             >
-              Start Creating Free
-            </a>
-            <a
-              href="#features"
-              className="btn-glass px-8 py-4 text-base"
-              aria-label="See morphology plate templates"
-            >
-              See Templates
+              Download Now
             </a>
           </div>
         </div>
