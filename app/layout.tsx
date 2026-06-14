@@ -43,7 +43,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${playfairDisplay.variable} scroll-smooth`}
+      className={`${inter.variable} ${playfairDisplay.variable}`}
     >
       <head>
         <link

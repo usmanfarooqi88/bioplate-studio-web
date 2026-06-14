@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { HeroSection } from '@/components/HeroSection';
 import { Screenshots } from '@/components/Screenshots';
+import { useLenis } from '@/lib/useLenis';
 
 /**
  * Landing page client shell with video preloading transition.
@@ -23,6 +24,8 @@ export function HomeClient() {
     setIsLoading(false);
     window.setTimeout(() => setShowContent(true), 100);
   }, []);
+
+  useLenis(showContent);
 
   return (
     <>
