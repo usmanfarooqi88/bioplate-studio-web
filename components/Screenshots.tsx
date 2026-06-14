@@ -1,179 +1,201 @@
 'use client';
 
 import Image from 'next/image';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 
 const FEATURES = [
   {
-    tag: 'Layout',
+    tag: 'LAYOUT',
     title: 'Flexible grid layouts',
     description:
       'Build 2×2 through 4×4 plates with precise margins and gutters—labels stay organized from the first grid.',
     image: '/screenshots/app_screen_1.jpg',
+    color: 'from-purple-500 to-purple-900',
   },
   {
-    tag: 'Panels',
+    tag: 'PANELS',
     title: 'Smart panel editing',
     description:
       'Select any cell to swap imagery, tune typography, duplicate work, or remove panels without breaking the plate.',
     image: '/screenshots/app_screen_2.jpg',
+    color: 'from-blue-500 to-blue-900',
   },
   {
-    tag: 'Import',
+    tag: 'IMPORT',
     title: 'Publication-ready plates',
     description:
       'Batch-import JPG, PNG, WebP, or PSD files and watch each asset land in the next open slot with automatic lettering.',
     image: '/screenshots/app_screen_3.jpg',
+    color: 'from-teal-500 to-teal-900',
   },
   {
-    tag: 'Scale bars',
+    tag: 'SCALE BARS',
     title: 'Publication-ready scale bars per panel',
     description:
       'Toggle scale bars, choose print presets from millimeters to centimeters, set orientation, thickness, color, and apply across all panels.',
     image: '/screenshots/app_screen_5.jpg',
+    color: 'from-pink-500 to-pink-900',
   },
   {
-    tag: 'Preferences',
+    tag: 'PREFERENCES',
     title: 'Advanced customization',
     description:
       'Preferences keep relabeling rules, scale modes, safety prompts, and UI density aligned with how your lab actually works.',
     image: '/screenshots/app_screen_6.jpg',
+    color: 'from-purple-500 to-pink-900',
   },
-] as const;
-
-const GLASS_CARD =
-  'rounded-3xl border border-white/[0.1] bg-white/[0.06] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.75)] backdrop-blur-xl';
+];
 
 function ScreenshotsComponent() {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const [edge, setEdge] = useState({ start: true, end: false });
-
-  const syncEdges = useCallback(() => {
-    const row = scrollerRef.current;
-    if (!row) return;
-    const maxScroll = row.scrollWidth - row.clientWidth;
-    const left = row.scrollLeft;
-    setEdge({
-      start: left <= 4,
-      end: left >= maxScroll - 4,
-    });
-  }, []);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const row = scrollerRef.current;
-    if (!row) return;
+    const handleScroll = () => {
+      if (!containerRef.current) return;
 
-    let raf = 0;
-    const onScroll = () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(syncEdges);
+      const container = containerRef.current;
+      const rect = container.getBoundingClientRect();
+      const scrollY = window.pageYOffset;
+      const windowHeight = window.innerHeight;
+
+      const sectionTop = scrollY + rect.top;
+      const sectionHeight = container.offsetHeight;
+
+      const triggerStart = sectionTop - windowHeight * 0.5;
+      const triggerEnd = sectionTop + sectionHeight - windowHeight * 0.5;
+
+      if (scrollY < triggerStart) {
+        setActiveIndex(0);
+        return;
+      }
+
+      if (scrollY >= triggerEnd) {
+        setActiveIndex(FEATURES.length - 1);
+        return;
+      }
+
+      const progressInSection = (scrollY - triggerStart) / (triggerEnd - triggerStart);
+      const rawIndex = progressInSection * FEATURES.length;
+      const newIndex = Math.floor(rawIndex);
+      const clampedIndex = Math.max(0, Math.min(newIndex, FEATURES.length - 1));
+
+      setActiveIndex(clampedIndex);
     };
 
-    row.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', syncEdges, { passive: true });
-    syncEdges();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+    handleScroll();
 
     return () => {
-      row.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', syncEdges);
-      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
-  }, [syncEdges]);
+  }, []);
 
-  const cardStepPx = () => {
-    const row = scrollerRef.current;
-    const card = row?.querySelector<HTMLElement>('[data-carousel-card]');
-    if (!card) return 424;
-    return card.offsetWidth + 24;
-  };
-
-  const scrollByDir = (dir: -1 | 1) => {
-    const row = scrollerRef.current;
-    if (!row) return;
-    row.scrollBy({ left: dir * cardStepPx(), behavior: 'smooth' });
-  };
+  const currentFeature = FEATURES[activeIndex];
 
   return (
     <section
-      id="screenshots"
-      className="relative scroll-mt-6 overflow-x-hidden bg-black text-white"
-      aria-labelledby="features-heading"
+      id="features"
+      ref={containerRef}
+      className="relative bg-black"
+      style={{ height: `${FEATURES.length * 100}vh` }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black via-purple-950/[0.08] to-black" />
-
-      <div className="relative mx-auto max-w-7xl px-6 sm:px-10 lg:px-12">
-        <div className="pb-8 pt-16 sm:pb-10 sm:pt-20">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-teal-400/90">
-            Inside the app
-          </p>
-          <h2
-            id="features-heading"
-            className="max-w-3xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:max-w-4xl md:text-5xl"
-          >
-            Everything your lab needs to lay out plates and ship figures
-          </h2>
-        </div>
-
+      {/* Animated background gradient */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-950/5 to-black pointer-events-none" />
+        
+        {/* Dynamic glow based on active feature */}
         <div
-          ref={scrollerRef}
-          className="flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-4 pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {FEATURES.map((feature, index) => (
-            <article
-              key={feature.image}
-              data-carousel-card
-              className={`relative w-[min(18.5rem,100%)] shrink-0 snap-start sm:w-[22rem] md:w-[26rem] ${GLASS_CARD} overflow-hidden`}
-            >
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-80" />
-              <div className="relative aspect-[16/10] w-full bg-neutral-900/80">
-                <Image
-                  src={feature.image}
-                  alt={feature.title}
-                  fill
-                  className="object-cover object-top"
-                  sizes="(max-width: 768px) 296px, 416px"
-                  priority={index === 0}
-                />
-              </div>
-              <div className="relative space-y-3 px-5 py-6 sm:px-6 sm:py-7">
-                <span className="inline-flex rounded-full border border-white/15 bg-white/[0.08] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-purple-200/95">
-                  {feature.tag}
-                </span>
-                <h3 className="text-lg font-bold leading-snug text-white sm:text-xl">
+          className={`absolute -inset-1/2 bg-gradient-to-br ${currentFeature.color} opacity-10 blur-3xl transition-all duration-1000 ease-out`}
+        />
+      </div>
+
+      {/* Sticky content */}
+      <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 w-full relative z-10">
+          <div className="text-center space-y-4 md:space-y-6">
+            {FEATURES.map((feature, index) => (
+              <div
+                key={index}
+                className={`transition-all duration-700 ease-out ${
+                  activeIndex === index
+                    ? 'opacity-100 relative scale-100'
+                    : 'opacity-0 absolute inset-0 pointer-events-none scale-95'
+                }`}
+              >
+                {/* Tag with enhanced styling */}
+                <div className="mb-6 md:mb-8 inline-block">
+                  <span className="badge-accent">
+                    {feature.tag}
+                  </span>
+                </div>
+
+                {/* Title with gradient effect */}
+                <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 md:mb-8 leading-tight max-w-5xl mx-auto">
                   {feature.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-gray-400 sm:text-[0.9375rem]">
+                </h2>
+
+                {/* Description */}
+                <p className="text-xl md:text-2xl text-gray-400 max-w-4xl mx-auto mb-12 md:mb-16 leading-relaxed">
                   {feature.description}
                 </p>
-              </div>
-            </article>
-          ))}
-        </div>
 
-        <div className="flex justify-end pb-14 pt-6">
-          <div className="flex shrink-0 gap-2">
-            <button
-              type="button"
-              aria-label="Previous features"
-              disabled={edge.start}
-              onClick={() => scrollByDir(-1)}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-white shadow-lg backdrop-blur-md transition enabled:hover:border-white/25 enabled:hover:bg-white/[0.12] disabled:cursor-not-allowed disabled:opacity-35"
-            >
-              <span aria-hidden className="text-lg leading-none">
-                ‹
-              </span>
-            </button>
-            <button
-              type="button"
-              aria-label="Next features"
-              disabled={edge.end}
-              onClick={() => scrollByDir(1)}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-white shadow-lg backdrop-blur-md transition enabled:hover:border-white/25 enabled:hover:bg-white/[0.12] disabled:cursor-not-allowed disabled:opacity-35"
-            >
-              <span aria-hidden className="text-lg leading-none">
-                ›
-              </span>
-            </button>
+                {/* Screenshot with enhanced glass effect */}
+                <div className="max-w-5xl mx-auto">
+                  <div className="group relative">
+                    {/* Glow effect */}
+                    <div
+                      className={`absolute -inset-6 md:-inset-8 rounded-[3rem] bg-gradient-to-br ${feature.color} opacity-20 blur-3xl group-hover:opacity-30 group-hover:blur-[40px] transition-all duration-700`}
+                    />
+
+                    {/* Glass container */}
+                    <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl hover:border-white/20 transition-all duration-300 group-hover:shadow-3xl group-hover:shadow-purple-500/20">
+                      {/* Inner content */}
+                      <div className="relative aspect-[16/10] bg-gradient-to-br from-white/10 to-transparent">
+                        <Image
+                          src={feature.image}
+                          alt={feature.title}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          sizes="(max-width: 1024px) 100vw, 80vw"
+                          priority={index === 0}
+                        />
+                        
+                        {/* Overlay gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
+                        
+                        {/* Shine effect */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Progress dots with enhanced design */}
+                <div className="flex justify-center gap-3 mt-14 md:mt-16">
+                  {FEATURES.map((_, idx) => (
+                    <div key={idx} className="relative group">
+                      <div
+                        className={`h-2 rounded-full transition-all duration-500 ${
+                          idx === activeIndex
+                            ? 'w-12 bg-gradient-to-r from-purple-500 to-teal-500 shadow-lg shadow-purple-500/50'
+                            : idx < activeIndex
+                            ? 'w-10 bg-gradient-to-r from-purple-400 to-purple-600 opacity-60'
+                            : 'w-8 bg-white/20 hover:bg-white/30'
+                        }`}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Feature count indicator */}
+                <div className="mt-10 text-sm text-gray-500 font-mono">
+                  {String(activeIndex + 1).padStart(2, '0')} / {String(FEATURES.length).padStart(2, '0')}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

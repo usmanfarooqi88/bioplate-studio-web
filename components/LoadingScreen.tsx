@@ -1,126 +1,78 @@
-'use client';
-
-import { useEffect, useRef, useState } from 'react';
-import { getScrollVideoSrcForViewport } from '@/lib/scrollVideoSource';
+import { useEffect, useState } from 'react';
 
 interface LoadingScreenProps {
   onComplete: () => void;
 }
 
-/**
- * Preloads the selected hero video source and fades into the page when ready.
- */
 export function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
-  const doneRef = useRef(false);
-  const onCompleteRef = useRef(onComplete);
 
   useEffect(() => {
-    onCompleteRef.current = onComplete;
-  }, [onComplete]);
+    let animationFrame: number;
+    let currentProgress = 0;
 
-  useEffect(() => {
-    const videoSrc = getScrollVideoSrcForViewport();
+    const animate = () => {
+      // Simulate loading progress
+      currentProgress += Math.random() * 30;
 
-    const video = document.createElement('video');
-    video.src = videoSrc;
-    video.preload = 'auto';
-    video.muted = true;
+      // Slow down as we approach 90%
+      if (currentProgress > 90) {
+        currentProgress = 90;
+      }
 
-    const updateProgressFromBuffer = () => {
-      if (video.buffered.length > 0 && video.duration > 0) {
-        const loaded = video.buffered.end(video.buffered.length - 1);
-        const total = video.duration;
-        setProgress(Math.min((loaded / total) * 100, 100));
+      setProgress(currentProgress);
+
+      if (currentProgress < 90) {
+        animationFrame = requestAnimationFrame(animate);
       }
     };
 
-    let fadeTimeoutId = 0;
-    let completeTimeoutId = 0;
-    let forceTimeoutId = 0;
+    animationFrame = requestAnimationFrame(animate);
 
-    const finish = () => {
-      if (doneRef.current) return;
-      doneRef.current = true;
-      window.clearTimeout(forceTimeoutId);
+    // Complete loading after 2 seconds
+    const completeTimer = setTimeout(() => {
       setProgress(100);
-      fadeTimeoutId = window.setTimeout(() => {
+
+      // Fade out after a brief moment
+      setTimeout(() => {
         setFadeOut(true);
-        completeTimeoutId = window.setTimeout(() => {
-          onCompleteRef.current();
-        }, 500);
-      }, 500);
-    };
 
-    const onCanPlayThrough = () => finish();
-
-    video.addEventListener('progress', updateProgressFromBuffer);
-    video.addEventListener('loadedmetadata', updateProgressFromBuffer);
-    video.addEventListener('canplaythrough', onCanPlayThrough);
-
-    forceTimeoutId = window.setTimeout(() => finish(), 5000);
-
-    video.load();
+        // Call onComplete after fade out
+        setTimeout(onComplete, 300);
+      }, 300);
+    }, 2000);
 
     return () => {
-      window.clearTimeout(forceTimeoutId);
-      window.clearTimeout(fadeTimeoutId);
-      window.clearTimeout(completeTimeoutId);
-      video.removeEventListener('progress', updateProgressFromBuffer);
-      video.removeEventListener('loadedmetadata', updateProgressFromBuffer);
-      video.removeEventListener('canplaythrough', onCanPlayThrough);
-      video.removeAttribute('src');
-      video.load();
+      cancelAnimationFrame(animationFrame);
+      clearTimeout(completeTimer);
     };
-  }, []);
+  }, [onComplete]);
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-500 ${
+      className={`fixed inset-0 z-50 bg-black flex flex-col items-center justify-center transition-opacity duration-300 ${
         fadeOut ? 'opacity-0' : 'opacity-100'
       }`}
     >
-      <div className="mb-8 animate-pulse">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-purple-500/30 to-teal-500/30">
-          <svg
-            className="h-16 w-16 text-purple-400"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
-            />
-          </svg>
-        </div>
-      </div>
+      {/* Heading */}
+      <h1 className="font-heading text-5xl md:text-6xl font-bold text-white mb-16 tracking-tight">
+        BioPlate Studio
+      </h1>
 
-      <h2 className="mb-6 animate-fade-in text-2xl font-semibold text-white">
-        Loading BioPlate Studio
-      </h2>
-
-      <div className="h-2 w-80 overflow-hidden rounded-full bg-white/10">
+      {/* Loading Bar Container */}
+      <div className="w-64 h-1 bg-white/10 rounded-full overflow-hidden">
+        {/* Progress Bar */}
         <div
-          className="h-full bg-gradient-to-r from-purple-500 to-teal-500 transition-all duration-300 ease-out"
+          className="h-full bg-gradient-to-r from-purple-500 via-teal-500 to-purple-500 transition-all duration-300 ease-out rounded-full"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      <p className="mt-4 font-mono text-sm text-gray-400">{Math.round(progress)}%</p>
-
-      <div className="mt-6 flex gap-2">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="h-2 w-2 animate-pulse rounded-full bg-purple-400"
-            style={{ animationDelay: `${i * 0.2}s` }}
-          />
-        ))}
-      </div>
+      {/* Optional: Loading percentage text */}
+      <p className="text-white/50 text-sm mt-4 font-light tracking-widest">
+        {Math.round(progress)}%
+      </p>
     </div>
   );
 }
