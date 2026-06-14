@@ -1,4 +1,7 @@
+'use client';
+
 import { useEffect, useState } from 'react';
+import { preloadHeroVideo } from '@/lib/preloadHeroVideo';
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -9,14 +12,18 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
+    preloadHeroVideo();
+  }, []);
+
+  useEffect(() => {
     let animationFrame: number;
     let currentProgress = 0;
+    let fadeTimeoutId = 0;
+    let completeTimeoutId = 0;
 
     const animate = () => {
-      // Simulate loading progress
       currentProgress += Math.random() * 30;
 
-      // Slow down as we approach 90%
       if (currentProgress > 90) {
         currentProgress = 90;
       }
@@ -30,47 +37,42 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
     animationFrame = requestAnimationFrame(animate);
 
-    // Complete loading after 2 seconds
-    const completeTimer = setTimeout(() => {
+    const completeTimer = window.setTimeout(() => {
       setProgress(100);
 
-      // Fade out after a brief moment
-      setTimeout(() => {
+      fadeTimeoutId = window.setTimeout(() => {
         setFadeOut(true);
 
-        // Call onComplete after fade out
-        setTimeout(onComplete, 300);
+        completeTimeoutId = window.setTimeout(onComplete, 300);
       }, 300);
     }, 2000);
 
     return () => {
       cancelAnimationFrame(animationFrame);
-      clearTimeout(completeTimer);
+      window.clearTimeout(completeTimer);
+      window.clearTimeout(fadeTimeoutId);
+      window.clearTimeout(completeTimeoutId);
     };
   }, [onComplete]);
 
   return (
     <div
-      className={`fixed inset-0 z-50 bg-black flex flex-col items-center justify-center transition-opacity duration-300 ${
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-300 ${
         fadeOut ? 'opacity-0' : 'opacity-100'
       }`}
     >
-      {/* Heading */}
-      <h1 className="font-heading text-5xl md:text-6xl font-bold text-white mb-16 tracking-tight">
+      <h1 className="mb-16 font-heading text-5xl font-bold tracking-tight text-white md:text-6xl">
         BioPlate Studio
       </h1>
 
-      {/* Loading Bar Container */}
-      <div className="w-64 h-1 bg-white/10 rounded-full overflow-hidden">
-        {/* Progress Bar */}
+      <div className="h-1 w-64 overflow-hidden rounded-full bg-white/10">
         <div
-          className="h-full bg-gradient-to-r from-purple-500 via-teal-500 to-purple-500 transition-all duration-300 ease-out rounded-full"
+          className="h-full rounded-full bg-gradient-to-r from-purple-500 via-teal-500 to-purple-500 transition-all duration-300 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      {/* Optional: Loading percentage text */}
-      <p className="text-white/50 text-sm mt-4 font-light tracking-widest">
+      <p className="mt-4 text-sm font-light tracking-widest text-white/50">
         {Math.round(progress)}%
       </p>
     </div>

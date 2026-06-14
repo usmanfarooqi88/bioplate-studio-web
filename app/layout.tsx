@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
 import { EXTENSION_HYDRATION_GUARD_SCRIPT } from '@/lib/extensionHydrationGuard';
+import { SCROLL_VIDEO_1080 } from '@/lib/scrollVideoSource';
 import './globals.css';
 
 const inter = Inter({
@@ -44,6 +45,15 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${playfairDisplay.variable} scroll-smooth`}
     >
+      <head>
+        <link
+          rel="preload"
+          href={SCROLL_VIDEO_1080}
+          as="video"
+          type="video/webm"
+        />
+        <link rel="prefetch" href="/screenshots/app_screen_1.jpg" />
+      </head>
       <body className="bg-black text-white antialiased" suppressHydrationWarning>
         <Script
           id="extension-hydration-guard"
