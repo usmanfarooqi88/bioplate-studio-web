@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
+import { Analytics } from '@vercel/analytics/next';
 import { EXTENSION_HYDRATION_GUARD_SCRIPT } from '@/lib/extensionHydrationGuard';
 import { SCROLL_VIDEO_1080 } from '@/lib/scrollVideoSource';
 import './globals.css';
@@ -63,6 +64,7 @@ export default function RootLayout({
           }}
         />
         {children}
+        <Analytics />
       </body>
     </html>
   );
